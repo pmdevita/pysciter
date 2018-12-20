@@ -237,5 +237,29 @@ class EventHandler:
             handled = self.on_data_arrived(p.contents)
             return handled or False
 
+        elif evt == EVENT_GROUPS.HANDLE_MOUSE:
+            p = ctypes.cast(params, ctypes.POINTER(MOUSE_PARAMS))
+
+            try:
+                cmd = (p.contents.cmd & 0xFFF)
+            except ValueError:
+                return False
+            cmd = MOUSE_EVENTS(cmd)
+
+            # Would this be better?
+            # cmd_values = [item.value for item in MOUSE_EVENTS]
+            # cmd = (p.contents.cmd & 0xFFF)
+            # if cmd in cmd_values:
+            #    cmd = MOUSE_EVENTS(cmd)
+
+            button = p.contents.button_state
+            if button:
+                button = MOUSE_BUTTONS(button)
+            # button_values = [item.value for item in MOUSE_BUTTONS]
+            # if button in button_values:
+            #     button = MOUSE_BUTTONS(button)
+
+            print("unhandled mouse event", cmd, button, sciter.Element(HELEMENT(p.contents.target)))
+
         return False
     pass
